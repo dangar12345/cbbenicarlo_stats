@@ -1,0 +1,3 @@
+{
+  "_descripcion": "Overrides manuales del estado de un partido: {partido_id: jugado|programado|suspendido}. Tiene prioridad sobre la regla automática (fecha pasada = suspendido). Ejemplo: {\"2486982\": \"jugado\"}"
+}

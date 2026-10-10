@@ -1,0 +1,43 @@
+{
+  "_descripcion": "Contexto curado por temporada (bloque P2 · punto 5). Lo que no es derivable de los partidos vive aquí: competición oficial y narrativa (hito). migrate_liga.py lo fusiona en la tabla 'temporadas'; los valores aquí tienen prioridad sobre los derivados. resultado_hito admite: ascenso | campeon | eliminado_playoff | permanencia | cancelada | en_curso | sin_hito.",
+  "2019/2020": {
+    "competicion": "LEB Plata",
+    "hito": "Temporada cancelada por la COVID-19",
+    "resultado_hito": "cancelada"
+  },
+  "2020/2021": {
+    "competicion": "LEB Plata",
+    "hito": "",
+    "resultado_hito": "sin_hito"
+  },
+  "2021/2022": {
+    "competicion": "LEB Plata",
+    "hito": "Disputó el playoff de ascenso (1/8 de final)",
+    "resultado_hito": "eliminado_playoff"
+  },
+  "2022/2023": {
+    "competicion": "LEB Plata",
+    "hito": "Disputó el playoff de ascenso (1/8 de final)",
+    "resultado_hito": "eliminado_playoff"
+  },
+  "2023/2024": {
+    "competicion": "LEB Plata",
+    "hito": "Disputó el playoff de ascenso (1/8 de final)",
+    "resultado_hito": "eliminado_playoff"
+  },
+  "2024/2025": {
+    "competicion": "Segunda FEB",
+    "hito": "Disputó el playoff de ascenso (1/8 de final)",
+    "resultado_hito": "eliminado_playoff"
+  },
+  "2025/2026": {
+    "competicion": "Segunda FEB",
+    "hito": "",
+    "resultado_hito": "sin_hito"
+  },
+  "2026/2027": {
+    "competicion": "Segunda FEB",
+    "hito": "Temporada en curso",
+    "resultado_hito": "en_curso"
+  }
+}

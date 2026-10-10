@@ -1,0 +1,12 @@
+{
+  "_descripcion": "IDs canónicos de equipos. Las claves que empiezan por '_' se ignoran. Añade aquí cualquier nombre histórico o variante que deba fusionarse en un único equipo_id. Formato: id_canonico -> {nombre_canonico, alias: [...]}",
+  "cb-benicarlo": {
+    "nombre_canonico": "CB Benicarló",
+    "alias": [
+      "C.B. BENICARLO",
+      "MI ARQUITECTO C.B. BENICARLO",
+      "INTERMAQUINAS BENICARLO",
+      "MADERAS SORLI BENICARLO"
+    ]
+  }
+}

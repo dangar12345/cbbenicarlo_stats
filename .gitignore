@@ -1,0 +1,25 @@
+# Datos en claro: solo se commitean cifrados en data/enc/ (ver ROADMAP.md §3)
+data/*.parquet
+data/*.csv
+data/*.db
+data/*.sqlite*
+
+# Secretos: la clave DATA_KEY y la contraseña viven en Secrets (Cloud) o en
+# el secrets.toml local. NUNCA en git.
+.streamlit/secrets.toml
+
+# Backups locales de datos
+data.bak_*/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Herramientas locales de sesión
+.playwright-cli/
+.agent/
+.claude/
+.gemini/
+.impeccable/
+.opencode/

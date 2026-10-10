@@ -1,0 +1,3 @@
+{
+  "_descripcion": "IDs canónicos de jugadores. Las claves que empiezan por '_' se ignoran. Añade aquí variantes de grafía del mismo jugador (acentos, iniciales, orden de apellidos) para fusionarlas en un único jugador_id. Ejemplo: {\"libroia-anthony-joseph\": {\"nombre_canonico\": \"LIBROIA, ANTHONY JOSEPH\", \"alias\": [\"LIBROIA, ANTHONY J.\"]}}"
+}
