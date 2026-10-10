@@ -2,8 +2,9 @@
 
 > **Qué es este documento**: handoff para retomar el proyecto en una sesión nueva.
 > Generado el 10/10/2026. Estado: **P1, P2, versión móvil y protección de datos
-> (cifrado del repo, app pública) completados**. Pendiente: bloque P3 y el push
-> público con historial fresco (ver §3).
+> completados; repos GitHub creados (app con historial fresco + backup privado con
+> datos en claro, ver §3)**. Pendiente: bloque P3 y el deploy en Streamlit
+> Community Cloud (pegar DATA_KEY en Secrets).
 
 ---
 
@@ -176,10 +177,12 @@ usuario.
 - Tras restaurar los parquet en claro (flujo scraper/migraciones en local), la app
   sigue funcionando: usa `.enc` si hay clave; fallback a claro si no la hay.
 
-### ⚠ CRÍTICO antes del push público: el historial de git contiene los datos
-Los commits anteriores trackean `data/*.parquet`, `*.csv` y `benicarlo.db` en claro:
-aunque hoy estén des-trackeados, **los blobs siguen en el historial** y quien clone el
-repo podría extraerlos. El `.gitignore` solo protege los commits futuros. Opciones:
+### Historial de git y datos en claro (RESUELTO 10/10/2026)
+Los commits anteriores trackeaban `data/*.parquet`, `*.csv` y `benicarlo.db` en claro:
+los blobs siguen en el historial **local**, pero el repo público se publicó con
+historial fresco (ver Repositorios) y el historial completo quedó preservado en el
+repo privado de backup. El `.gitignore` protege los commits futuros. Resumen de
+opciones aplicadas:
 
 1. **Repo público con historial fresco** (recomendada; no toca el repo local):
    ```bash
@@ -197,15 +200,58 @@ que muestra (alguien con la URL puede transcribir la UI); lo que no puede hacer 
 descargarse la base de datos cruda. Si el dato llegara a ser realmente sensible, el
 siguiente escalón es la opción B (bucket privado) o limitar la visibilidad.
 
+### Repositorios en GitHub (10/10/2026)
+
+| Repo | Visibilidad | Contenido |
+|---|---|---|
+| `dangar12345/cbbenicarlo_stats` | privado* | **Repo de la app**: historial fresco (1 commit, `a8e2618`), datos solo cifrados en `data/enc/`. Listo para hacerlo público o desplegar en Cloud. |
+| `dangar12345/cbbenicarlo_stats_datos` | privado | **Backup "por si acaso"**: rama `main` = datos SIN encriptar en la raíz (parquet, CSV, `benicarlo.db`, `secrets.toml` con la DATA_KEY) + rama `historial` = historial completo de desarrollo. |
+
+*Privado de momento; puede pasarse a público en cualquier momento sin riesgo
+porque el historial no contiene datos en claro.
+
+**Remotes locales**: `origin` → `cbbenicarlo_stats` (SSH alias
+`github.com-personal`), `backup` → `cbbenicarlo_stats_datos`.
+
+**Flujo de trabajo (importante)**: el desarrollo sigue en `main` local
+(historial completo). El repo público recibe **historial fresco**, nunca `main`
+directo (arrastraría el historial con datos en claro). Para publicar cambios:
+
+```bash
+# 1. Terminar el trabajo en main y commitear
+git checkout publico
+git rm -rq .
+git restore --source=main --staged --worktree .
+git commit -m "sync desde main"
+git push origin publico:main
+git checkout main
+```
+
+Y si los datos cambiaron: `scripts/encrypt_data.py` ANTES del sync (los `.enc`
+son lo que viaja al repo público).
+
+Para refrescar el backup de datos en claro (repo privado, rama `main`):
+
+```bash
+export GIT_INDEX_FILE=/tmp/opencode/idx-backup
+git read-tree main
+git add -f data/*.parquet data/*.csv data/benicarlo.db .streamlit/secrets.toml
+COMMIT=$(git commit-tree $(git write-tree) -p main -m "Backup: datos en claro")
+unset GIT_INDEX_FILE
+git branch -f backup-main $COMMIT && git push backup backup-main:main
+```
+
 ### Checklist de despliegue en Community Cloud
 - [x] `requirements.txt` con versiones fijadas
 - [x] `.gitignore` aplicado y `git rm --cached` de los datos en claro
 - [x] `.streamlit/secrets.toml` no commiteado (en `.gitignore`)
 - [x] Simulación local: app sirviendo desde `data/enc/` con `DATA_KEY` en secrets
-- [ ] Publicar el repo con **historial fresco** (ver arriba) — obligatorio
-- [ ] En Cloud: *Advanced settings → Secrets*, pegar `DATA_KEY = "..."`
-- [ ] Tras el primer deploy: comprobar que la app carga y que el repo no muestra
-      ningún parquet/csv/db en claro (ni en commits antiguos)
+- [x] Repo con **historial fresco** subido a GitHub (verificado: `data/` solo
+      contiene `.enc` + JSONs de contexto; 1 commit)
+- [x] Backup privado con datos en claro + historial completo creado y subido
+- [ ] En Cloud: *New app* → repo `dangar12345/cbbenicarlo_stats` → *Advanced
+      settings → Secrets*, pegar `DATA_KEY = "..."`
+- [ ] Tras el primer deploy: comprobar que la app carga con datos (234 partidos)
 
 ## 4. Siguientes bloques del roadmap (P3, opcional)
 
