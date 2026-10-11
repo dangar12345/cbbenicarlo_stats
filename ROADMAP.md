@@ -15,8 +15,12 @@ cd ~/benicarloStats
 .venv/bin/streamlit run app.py --server.headless true --server.port 8501
 ```
 
-- **App**: `app.py` (Streamlit, 4 vistas en el sidebar). Lee `data/*.parquet`
-  (o los descifra de `data/enc/*.enc` con `DATA_KEY`, ver §3).
+- **App**: `app.py` (Streamlit, 5 vistas en el sidebar; entrada mínima de 88
+  líneas). Lee `data/*.parquet` (o los descifra de `data/enc/*.enc` con
+  `DATA_KEY`, ver §3). El código vive en módulos: `theme.py` (CSS),
+  `components.py` (HTML helpers), `charts.py` (estilo de gráficas),
+  `data_loaders.py` (carga cifrada) y `views/{resumen,partidos,lideres,ficha,
+  cuartos}.py` — cada vista expone `render(ctx)`.
 - **Datos**: `data/benicarlo.db` (SQLite = fuente de verdad) → exportados a
   parquet/CSV. **Tras cualquier migración/QA, reiniciar Streamlit** (`st.cache_data`
   sirve datos en memoria) y relanzar `scripts/encrypt_data.py` para regenerar los
@@ -261,6 +265,16 @@ git branch -f backup-main $COMMIT && git push backup backup-main:main
   split titular/suplente, temporada a temporada y bitácora de últimos 10
   partidos; comparador con radar normalizado (PPP/RPP/APP/ROB/TAP/VPP),
   filtro de temporada y tabla con la ventaja de cada métrica.
+- **Filas de KPIs igualadas** (Resumen, CASA/FUERA, Líderes, Cuartos): pasan de
+  `st.columns` (alturas desiguales: 128 vs 150px) al patrón `cards-row`
+  (flex con stretch: 171px exactos las 5) y apilan con aire en móvil.
+- **Gráficas con una sola temporada**: la Evolución Interanual (Líderes) y la
+  Trayectoria (Ficha) caen a barras por métrica cuando el jugador tiene < 2
+  temporadas (80 de 90 jugadores del club); con ≥ 2 mantienen las líneas.
+- **Refactor en módulos**: `app.py` de 2.142 → 88 líneas (config, tema, sidebar,
+  dispatch). Código repartido en `theme.py`, `components.py`, `charts.py`,
+  `data_loaders.py` y `views/{resumen,partidos,lideres,ficha,cuartos}.py`
+  (cada vista expone `render(ctx)`). Verificadas las 5 vistas tras el corte.
 - **Tests**: 41 en `tests/` (parsers del scraper y saneado de encoding,
   `derivar_estado`/alias de `data_utils`, invariantes de las exportaciones:
   marcadores, cuartos, acta vs marcador, IDs canónicos). `pytest tests/`.
@@ -268,7 +282,8 @@ git branch -f backup-main $COMMIT && git push backup backup-main:main
   parquet, métricas derivadas, estados QA, ficheros de contexto).
 - **`scripts/actualizar.sh`**: actualización en un comando — scraper (omisible
   con `--sin-scraper`) → QA `--fix` → cifrado → backup de datos en claro →
-  sync del repo público. Verificado de punta a punta.
+  sync del repo público (tolera avances del remoto con fetch+rebase).
+  Verificado de punta a punta.
 
 ### Pendiente (P3, opcional)
 - Exportaciones (CSV/PNG) desde la UI — hoy deliberadamente no hay, por la

@@ -25,10 +25,22 @@ Streamlit · Plotly · pandas/pyarrow · SQLite (scraper propio de FEB).
 ## Estructura
 
 ```
-app.py                  # Aplicación Streamlit (4 vistas)
+app.py                  # Entrada: config, tema, sidebar y dispatch (88 líneas)
+theme.py                # CSS del tema oscuro
+components.py           # Helpers de composición HTML (tarjetas, badges)
+charts.py               # Estilo compartido de gráficas
+data_loaders.py         # Carga: parquet cifrado (data/enc) + fallback local
+views/                  # Una función render(ctx) por vista:
+    resumen.py          #   Trayectoria, KPIs, split, H2H, narrativa, calendario
+    partidos.py         #   Explorador de partidos, marcador, boxscores
+    lideres.py          #   Rankings, Top 10, evolución interanual
+    ficha.py            #   Ficha de jugador y comparador (radar)
+    cuartos.py          #   Análisis por cuarto
 scraper.py              # Scraper idempotente de FEB (partidos, actas, clasificación)
 data_utils.py           # Utilidades de datos derivados
-scripts/                # Migraciones, QA de reconciliación (C1-C10), cifrado
+tests/                  # Parsers del scraper, invariants de datos (pytest)
+docs/DICCIONARIO_DATOS.md  # Esquema y significado de todas las tablas
+scripts/                # Migraciones, QA (C1-C10), cifrado, actualizar.sh
 data/enc/               # Datos cifrados (Fernet) — lo único que viaja al repo
 MIGRATIONS.md           # Orden y detalle de migraciones/QA
 ROADMAP.md              # Estado del proyecto y handoff
