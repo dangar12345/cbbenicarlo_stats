@@ -253,8 +253,26 @@ git branch -f backup-main $COMMIT && git push backup backup-main:main
       settings → Secrets*, pegar `DATA_KEY = "..."`
 - [ ] Tras el primer deploy: comprobar que la app carga con datos (234 partidos)
 
-## 4. Siguientes bloques del roadmap (P3, opcional)
+## 4. P3 — hecho y pendiente (11/10/2026)
 
-Del análisis de producto inicial: tests del scraper, diccionario de datos,
-exportaciones, clasificación completa del grupo como vista, comparador de jugadores,
-ficha por jugador, watermarking de datos. Priorizar según lo que salga del despliegue.
+### Completado
+- **Ficha & Comparador de Jugadores** (5ª vista): ficha individual con KPIs de
+  carrera (PPP/RPP/APP/VPP, % titularidad, TS%), trayectoria por temporada,
+  split titular/suplente, temporada a temporada y bitácora de últimos 10
+  partidos; comparador con radar normalizado (PPP/RPP/APP/ROB/TAP/VPP),
+  filtro de temporada y tabla con la ventaja de cada métrica.
+- **Tests**: 41 en `tests/` (parsers del scraper y saneado de encoding,
+  `derivar_estado`/alias de `data_utils`, invariantes de las exportaciones:
+  marcadores, cuartos, acta vs marcador, IDs canónicos). `pytest tests/`.
+- **Diccionario de datos**: `docs/DICCIONARIO_DATOS.md` (esquema SQLite completo,
+  parquet, métricas derivadas, estados QA, ficheros de contexto).
+- **`scripts/actualizar.sh`**: actualización en un comando — scraper (omisible
+  con `--sin-scraper`) → QA `--fix` → cifrado → backup de datos en claro →
+  sync del repo público. Verificado de punta a punta.
+
+### Pendiente (P3, opcional)
+- Exportaciones (CSV/PNG) desde la UI — hoy deliberadamente no hay, por la
+  protección de datos.
+- Clasificación completa del grupo como vista propia (ahora vive en el contexto
+  de temporada y la franja del marcador).
+- Watermarking de datos si algún día se comparten ficheros fuera del club.
