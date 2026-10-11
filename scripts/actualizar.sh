@@ -80,6 +80,11 @@ if ! git merge-base --is-ancestor origin/main publico; then
 fi
 git rm -rq . >/dev/null 2>&1 || true
 git restore --source=main --staged --worktree .
+# El scraper no viaja al repo público (ni en el árbol ni en el historial):
+# es la herramienta que reconstruye el dataset y vive en el repo privado.
+# -f: tras la purga del historial, restaurarlo desde main cuenta como
+# fichero añadido frente a HEAD y git rm exige forzarlo.
+git rm -q -f --ignore-unmatch scraper.py >/dev/null
 if git diff --quiet && git diff --cached --quiet; then
     echo "   repo público ya sincronizado"
 else

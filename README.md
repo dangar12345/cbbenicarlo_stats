@@ -36,7 +36,6 @@ views/                  # Una función render(ctx) por vista:
     lideres.py          #   Rankings, Top 10, evolución interanual
     ficha.py            #   Ficha de jugador y comparador (radar)
     cuartos.py          #   Análisis por cuarto
-scraper.py              # Scraper idempotente de FEB (partidos, actas, clasificación)
 data_utils.py           # Utilidades de datos derivados
 tests/                  # Parsers del scraper, invariants de datos (pytest)
 docs/DICCIONARIO_DATOS.md  # Esquema y significado de todas las tablas
@@ -67,5 +66,7 @@ usa como fallback) o configura `DATA_KEY` en `.streamlit/secrets.toml`
 
 El repositorio público no contiene estadísticas en claro: los datasets van
 cifrados con Fernet y la clave de descifrado solo existe en los *Secrets* de
-Streamlit Community Cloud. El scraper y las migraciones se ejecutan en local
-con los ficheros en claro (ignorados por `.gitignore`).
+Streamlit Community Cloud. El **scraper** (la herramienta que reconstruye el
+dataset) tampoco se publica: vive en un repositorio privado de backup junto a
+los datos sin encriptar. Las migraciones y el scraper se ejecutan en local con
+los ficheros en claro (ignorados por `.gitignore`).
