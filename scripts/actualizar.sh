@@ -67,6 +67,17 @@ fi
 
 echo "== 5/5 Sync del repo público =="
 git checkout -q publico
+# El remoto puede haber avanzado (ediciones desde la web de GitHub): se trae
+# y rebasea para no perderlo ni sufrir rechazos de push.
+git fetch -q origin
+if ! git merge-base --is-ancestor origin/main publico; then
+    echo "   el remoto va por delante; rebaseando publico sobre origin/main"
+    git rebase origin/main || {
+        echo "ERROR: rebase conflictivo; resuélvelo a mano y repite el sync."
+        git checkout -q main
+        exit 1
+    }
+fi
 git rm -rq . >/dev/null 2>&1 || true
 git restore --source=main --staged --worktree .
 if git diff --quiet && git diff --cached --quiet; then
