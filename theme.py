@@ -534,11 +534,32 @@ CSS = """<style>
         min-width: 0;
     }
 
-    /* Móvil: sin anclas de título ni modebar de Plotly (táctil, sin hover) */
+    /* Anclas de título y widget de estado de Cloud: ruido visual en cualquier
+       tamaño de pantalla (el badge flotante estorba en capturas y móvil). */
+    .stHeadingAnchor,
+    div[data-testid="stStatusWidget"] {
+        display: none !important;
+    }
+
+    /* Navegación móvil: la app vive en un iframe; el bloque de nav móvil
+       (marcador .solo-movil + radio + glosario) se oculta en desktop y se
+       muestra en táctil, donde la sidebar desaparece por completo. La cadena
+       de hermanos usa :has() porque los widgets van dentro de contenedores. */
+    .solo-movil { display: none; }
+    .stVerticalBlock > div:has(.solo-movil),
+    .stVerticalBlock > div:has(.solo-movil) + div,
+    .stVerticalBlock > div:has(.solo-movil) + div + div { display: none; }
     @media (max-width: 720px) {
-        .stHeadingAnchor {
-            display: none !important;
-        }
+        .solo-movil { display: block; }
+        .stVerticalBlock > div:has(.solo-movil),
+        .stVerticalBlock > div:has(.solo-movil) + div,
+        .stVerticalBlock > div:has(.solo-movil) + div + div { display: block; }
+        section[data-testid="stSidebar"],
+        [data-testid="stSidebarCollapsedControl"] { display: none !important; }
+    }
+
+    /* Móvil: modebar de Plotly oculta (táctil, sin hover) y marcador compacto */
+    @media (max-width: 720px) {
         .modebar-container {
             display: none !important;
         }

@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from charts import style_fig, chart_kwargs
-from components import _html_plano, truncar_nombre, hito_badge
+from components import _html_plano, miles, truncar_nombre, hito_badge
 
 
 def render(ctx):
@@ -46,7 +46,7 @@ def render(ctx):
         st.warning(f"No hay datos de parciales para {scope}.")
         st.stop()
 
-    st.caption(f"Basado en {len(merged_q)} partidos jugados.")
+    st.caption(f"Basado en {len(merged_q)} partidos con parciales disponibles.")
 
     merged_q['diff_q1'] = merged_q['q1_beni'] - merged_q['q1_rival']
     merged_q['diff_q2'] = merged_q['q2_beni'] - merged_q['q2_rival']

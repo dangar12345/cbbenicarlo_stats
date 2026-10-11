@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from charts import style_fig, chart_kwargs
-from components import _html_plano, truncar_nombre, hito_badge
+from components import _html_plano, miles, truncar_nombre, hito_badge
 
 
 def render(ctx):
@@ -105,7 +105,7 @@ def render(ctx):
         sel_min_minutos = st.slider("Minutos mínimos", 0, max(max_minutos_corte, 1), 0, step=50)
     with corte_col3:
         st.markdown("<div style='height: 26px;'></div>", unsafe_allow_html=True)
-        st.caption("Corte mínimo para entrar en los rankings: evita sesgos en promedios (PPP, TS%, eFG%, NetRtg).")
+        st.caption("Corte mínimo para entrar en los rankings: evita sesgos en promedios (Pts/p, TS%, eFG%, NetRtg).")
 
     player_rank = player_agg[
         (player_agg['Partidos'] >= sel_min_partidos) &
@@ -135,7 +135,7 @@ def render(ctx):
 
     tarjetas_lideres = [
         _tarjeta_lider("Máximo Anotador", top_scorer['Puntos'], "PTS", top_scorer['jugador'],
-                       f"{top_scorer['Puntos_Media']} PPP · {top_scorer['Partidos']} partidos"),
+                       f"{top_scorer['Puntos_Media']} Pts/p · {top_scorer['Partidos']} partidos"),
         _tarjeta_lider("Líder Asistencias", top_ast['Asistencias'], "AST", top_ast['jugador'],
                        f"{top_ast['Asistencias_Media']} APP · {top_ast['Partidos']} partidos"),
         _tarjeta_lider("Líder Rebotes", top_reb['Rebotes'], "REB", top_reb['jugador'],
@@ -170,7 +170,7 @@ def render(ctx):
         fig_scorers.update_traces(
             textposition='outside',
             textfont=dict(color='#F8FAFC'),
-            hovertemplate='%{customdata[2]}<br><b>%{x}</b> puntos · %{customdata[0]:.1f} PPP · %{customdata[1]} partidos<extra></extra>',
+            hovertemplate='%{customdata[2]}<br><b>%{x}</b> puntos · %{customdata[0]:.1f} Pts/p · %{customdata[1]} partidos<extra></extra>',
         )
         style_fig(fig_scorers, height=380)
         fig_scorers.update_layout(
@@ -288,12 +288,13 @@ def render(ctx):
         )
     else:
         fig_evo = go.Figure()
+        nombres_evo = {'PPP': 'Pts/p', 'RPP': 'Reb/p', 'APP': 'As/p'}
         for serie, color, ancho in (('PPP', '#38BDF8', 3), ('RPP', '#F43F5E', 2), ('APP', '#34D399', 2)):
             fig_evo.add_trace(go.Scatter(
-                x=evo['temporada'], y=evo[serie], name=serie,
+                x=evo['temporada'], y=evo[serie], name=nombres_evo[serie],
                 mode='lines+markers',
                 line=dict(color=color, width=ancho),
-                hovertemplate='%{x}<br>' + serie + ': <b>%{y:.1f}</b> por partido<extra></extra>',
+                hovertemplate='%{x}<br>' + nombres_evo[serie] + ': <b>%{y:.1f}</b> por partido<extra></extra>',
             ))
         style_fig(fig_evo, height=300, hovermode='x unified')
         fig_evo.update_layout(
@@ -307,7 +308,7 @@ def render(ctx):
     if len(evo) >= 3:
         pendiente = np.polyfit(np.arange(len(evo)), evo['PPP'].values, 1)[0]
         tendencia = ("estable" if abs(pendiente) < 0.05
-                     else f"{pendiente:+.1f} PPP por temporada")
+                     else f"{pendiente:+.1f} Pts/p por temporada")
         st.caption(f"{len(evo)} temporadas con el club · Tendencia de anotación: {tendencia}.")
     else:
         st.caption(f"{len(evo)} temporada(s) con el club.")
@@ -319,7 +320,7 @@ def render(ctx):
     tabla_evo['TS%'] = tabla_evo['TS%'].apply(lambda x: f"{x:.1f}%")
     tabla_evo['eFG%'] = tabla_evo['eFG%'].apply(lambda x: f"{x:.1f}%")
     tabla_evo['NetRtg'] = tabla_evo['NetRtg'].apply(lambda x: f"{x:+.1f}")
-    tabla_evo.columns = ['Temporada', 'PJ', 'MIN', 'PTS', 'PPP', 'REB', 'RPP', 'AST', 'APP',
+    tabla_evo.columns = ['Temporada', 'PJ', 'MIN', 'PTS', 'Pts/p', 'REB', 'Reb/p', 'AST', 'As/p',
                          'VAL', 'TS%', 'eFG%', 'NetRtg']
     st.dataframe(tabla_evo, hide_index=True, width="stretch")
 

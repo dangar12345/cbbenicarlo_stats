@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from charts import style_fig, chart_kwargs
-from components import _html_plano, truncar_nombre, hito_badge
+from components import _html_plano, miles, truncar_nombre, hito_badge
 
 
 def render(ctx):
@@ -54,22 +54,35 @@ def render(ctx):
         st.warning("No hay partidos con los filtros seleccionados.")
         st.stop()
 
-    # Match Dropdown with Clear Labels
-    match_options = {}
-    for _, row in partidos_disponibles.iterrows():
-        fecha_fmt = row['fecha'].strftime('%d/%m/%Y') if pd.notnull(row['fecha']) else 'S/F'
-        jornada_clean = row['jornada_nombre'].split('(')[0].strip()
-        icon = "🟢" if row['resultado_benicarlo'] == 'Victoria' else "🔴"
-        aviso = "⚠ " if row.get('qa_estado', 'ok') != 'ok' else ""
-        label = f"{aviso}{icon} [{row['temporada']} · {jornada_clean}] {fecha_fmt} | {row['nombre_benicarlo']} {row['puntos_benicarlo']} - {row['puntos_rival']} {row['equipo_rival']}"
-        match_options[label] = row['partido_id']
+    # Selector por tabla: todas las opciones con su marcador a la vista, en
+    # lugar de un select de 199 etiquetas truncadas donde V/D solo se leía
+    # por el color de un emoji.
+    tabla_sel = partidos_disponibles.assign(
+        Fecha=partidos_disponibles['fecha'].dt.strftime('%d/%m/%y').fillna('S/F'),
+        Rival=partidos_disponibles['equipo_rival'],
+        Sede=np.where(partidos_disponibles['es_benicarlo_local'] == 1, 'Casa', 'Fuera'),
+        Marcador=(partidos_disponibles['puntos_benicarlo'].astype(str) + ' - '
+                  + partidos_disponibles['puntos_rival'].astype(str)),
+        Res=partidos_disponibles['resultado_benicarlo'].str[0],
+        Jornada=partidos_disponibles['jornada_nombre'].str.split('(').str[0].str.strip(),
+        Datos=np.where(partidos_disponibles['qa_estado'] == 'ok', 'OK',
+                       '⚠ ' + partidos_disponibles['qa_estado']),
+    )[['Fecha', 'Rival', 'Sede', 'Marcador', 'Res', 'Jornada', 'Datos']]
 
-    sel_label = st.selectbox(
-        f"Seleccionar Partido ({len(partidos_disponibles)} encontrados):",
-        list(match_options.keys()),
-        index=0
+    st.caption(f"Selecciona un partido de la tabla ({len(partidos_disponibles)} encontrados; "
+               "por defecto, el más reciente). «Datos» avisa cuando el acta o los parciales "
+               "no cuadran con el marcador oficial.")
+    evento = st.dataframe(
+        tabla_sel, hide_index=True, width="stretch", height=340,
+        on_select="rerun", selection_mode="single-row",
+        column_config={
+            "Rival": st.column_config.TextColumn(width="medium"),
+            "Jornada": st.column_config.TextColumn(width="small"),
+        },
     )
-    sel_partido_id = match_options[sel_label]
+    filas_sel = evento.selection.rows
+    idx_sel = filas_sel[0] if filas_sel else 0
+    sel_partido_id = int(partidos_disponibles.iloc[idx_sel]['partido_id'])
     match_row = df_partidos[df_partidos['partido_id'] == sel_partido_id].iloc[0]
     
     # Scoreboard

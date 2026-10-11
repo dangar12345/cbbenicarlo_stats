@@ -1,10 +1,7 @@
 # 🏀 CB Benicarló · Analytics Hub
 
-Dashboard de estadísticas del CB Benicarló con datos oficiales de la FEB
-(2019/2020 – 2026/2027): 234 partidos, boxscores completos, análisis por
-cuartos, head-to-head por rival y evolución interanual por jugador.
-
-**Demo**: desplegada en Streamlit Community Cloud (ver link cuando esté activa).
+📊 Estadísticas oficiales del CB Benicarló en FEB: 234 partidos, boxscores
+completos y analítica avanzada desde la temporada 2019/20 hasta hoy.
 
 ## Funcionalidades
 

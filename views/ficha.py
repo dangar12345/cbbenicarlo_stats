@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from charts import style_fig, chart_kwargs
-from components import _html_plano, truncar_nombre, hito_badge
+from components import _html_plano, miles, truncar_nombre, hito_badge
 
 
 def render(ctx):
@@ -22,6 +22,15 @@ def render(ctx):
     df_temporadas = ctx['df_temporadas']
     st.markdown("## Ficha & Comparador de Jugadores")
     st.caption("Ficha individual por temporada y comparación lado a lado entre jugadores del club.")
+
+    # Claves internas de métrica -> etiqueta legible (ejes, leyendas y tablas)
+    NOMBRES_CMP = {'PPP': 'Pts/p', 'RPP': 'Reb/p', 'APP': 'As/p', 'ROB': 'Rob/p',
+                   'TAP': 'Tap/p', 'T3P': 'Trip/p', 'VPP': 'Val/p', 'MIN': 'Min/p'}
+
+    # Deep link: ?jugador=<nombre canónico> preselecciona la ficha
+    _param_jugador = st.query_params.get("jugador")
+    if _param_jugador and "ficha_jugador" not in st.session_state:
+        st.session_state["ficha_jugador"] = _param_jugador
 
     def _serie_temporada(jrows):
         """Agregados por temporada de un jugador (mismas fórmulas que los rankings).
@@ -100,11 +109,12 @@ def render(ctx):
         pct_titular = (titulares / pj_total * 100) if pj_total else 0.0
         ts_carrera = _agg_carrera(jrows)
         kpis = [
-            ("Puntos por partido", f"{ts_carrera['PPP']}", f"{int(jrows['puntos'].sum())} puntos en total"),
-            ("Rebotes por partido", f"{ts_carrera['RPP']}", f"{int(jrows['rebotes_totales'].sum())} rebotes"),
-            ("Asistencias por partido", f"{ts_carrera['APP']}", f"{int(jrows['asistencias'].sum())} asistencias"),
-            ("Valoración por partido", f"{ts_carrera['VPP']}", f"{int(jrows['valoracion'].sum())} valoración total"),
-            ("Titularidad", f"{pct_titular:.0f}%", f"TS% carrera: {ts_carrera['TS%']:.1f}%"),
+            ("Puntos por partido", f"{ts_carrera['PPP']}", f"{miles(int(jrows['puntos'].sum()))} puntos en total"),
+            ("Rebotes por partido", f"{ts_carrera['RPP']}", f"{miles(int(jrows['rebotes_totales'].sum()))} rebotes"),
+            ("Asistencias por partido", f"{ts_carrera['APP']}", f"{miles(int(jrows['asistencias'].sum()))} asistencias"),
+            ("Valoración por partido", f"{ts_carrera['VPP']}",
+             f"{miles(int(jrows['valoracion'].sum()))} VAL · TS% {ts_carrera['TS%']:.1f}%"),
+            ("Titularidad", f"{pct_titular:.0f}%", f"{titulares} de {pj_total} partidos como inicial"),
         ]
         tarjetas = []
         for etiqueta, valor, sub in kpis:
@@ -127,11 +137,12 @@ def render(ctx):
             st.markdown("#### Trayectoria por Temporada")
             metricas_tray = (('PPP', '#38BDF8'), ('RPP', '#F43F5E'),
                              ('APP', '#34D399'), ('VPP', '#FBBF24'))
+            nombres_tray = {'PPP': 'Pts/p', 'RPP': 'Reb/p', 'APP': 'As/p', 'VPP': 'Val/p'}
             if len(serie) < 2:
                 # Un solo punto en líneas queda perdido: barras con las
                 # métricas de esa temporada.
                 fig_tray = go.Figure(go.Bar(
-                    x=[m for m, _ in metricas_tray],
+                    x=[nombres_tray[m] for m, _ in metricas_tray],
                     y=[serie[m].iloc[0] for m, _ in metricas_tray],
                     marker_color=[c for _, c in metricas_tray],
                     text=[f"{serie[m].iloc[0]:.1f}" for m, _ in metricas_tray],
@@ -150,9 +161,9 @@ def render(ctx):
                 fig_tray = go.Figure()
                 for serie_nombre, color in metricas_tray:
                     fig_tray.add_trace(go.Scatter(
-                        x=serie['temporada'], y=serie[serie_nombre], name=serie_nombre,
+                        x=serie['temporada'], y=serie[serie_nombre], name=nombres_tray[serie_nombre],
                         mode='lines+markers', line=dict(color=color, width=2),
-                        hovertemplate='%{x}<br>' + serie_nombre + ': <b>%{y:.1f}</b><extra></extra>',
+                        hovertemplate='%{x}<br>' + nombres_tray[serie_nombre] + ': <b>%{y:.1f}</b><extra></extra>',
                     ))
                 style_fig(fig_tray, height=320, hovermode='x unified')
                 fig_tray.update_layout(
@@ -184,8 +195,8 @@ def render(ctx):
         tabla_ficha['TS%'] = tabla_ficha['TS%'].apply(lambda x: f"{x:.1f}%")
         tabla_ficha['eFG%'] = tabla_ficha['eFG%'].apply(lambda x: f"{x:.1f}%")
         tabla_ficha['NetRtg'] = tabla_ficha['NetRtg'].apply(lambda x: f"{x:+.1f}")
-        tabla_ficha.columns = ['Temporada', 'PJ', 'MIN', 'PTS', 'PPP', 'REB', 'RPP',
-                               'AST', 'APP', 'VAL', 'VPP', 'TS%', 'eFG%', 'NetRtg']
+        tabla_ficha.columns = ['Temporada', 'PJ', 'MIN', 'PTS', 'Pts/p', 'REB', 'Reb/p',
+                               'AST', 'As/p', 'VAL', 'Val/p', 'TS%', 'eFG%', 'NetRtg']
         st.markdown("#### Temporada a Temporada")
         st.dataframe(tabla_ficha, hide_index=True, width="stretch")
 
@@ -240,20 +251,25 @@ def render(ctx):
         st.markdown(f"### {truncar_nombre(jugador_a, 28)} vs {truncar_nombre(jugador_b, 28)}")
         st.caption(f"Alcance: {alcance} · {agg_a['PJ']} vs {agg_b['PJ']} partidos")
 
-        # Radar normalizado al máximo de ambos en cada eje
+        # Radar normalizado EJE A EJE (cada métrica escala frente al máximo de
+        # los dos jugadores en esa métrica): si todas compartieran el máximo
+        # absoluto, Reb/As/Tap colapsarían al centro cuando PPP domina.
         ejes = ['PPP', 'RPP', 'APP', 'ROB', 'TAP', 'VPP']
+        maximos = {e: (max(agg_a[e], agg_b[e]) or 1) for e in ejes}
         fig_cmp = go.Figure()
         for nombre, agg, color in ((truncar_nombre(jugador_a, 20), agg_a, '#38BDF8'),
                                    (truncar_nombre(jugador_b, 20), agg_b, '#F43F5E')):
             fig_cmp.add_trace(go.Scatterpolar(
-                r=[agg[e] for e in ejes], theta=ejes, fill='toself', name=nombre,
+                r=[agg[e] / maximos[e] * 100 for e in ejes],
+                theta=[NOMBRES_CMP[e] for e in ejes],
+                customdata=[agg[e] for e in ejes],
+                fill='toself', name=nombre,
                 line=dict(color=color),
-                hovertemplate='%{theta}: <b>%{r:.1f}</b><extra>' + nombre + '</extra>',
+                hovertemplate='%{theta}: <b>%{customdata:.1f}</b> por partido<extra>' + nombre + '</extra>',
             ))
-        maximo = max(max(agg_a[e], agg_b[e]) for e in ejes) or 1
         style_fig(fig_cmp, height=400)
         fig_cmp.update_layout(
-            polar=dict(radialaxis=dict(range=[0, maximo * 1.1], gridcolor="#1E293B",
+            polar=dict(radialaxis=dict(range=[0, 112], gridcolor="#1E293B",
                                        tickfont=dict(color="#E2E8F0"), showticklabels=False),
                        bgcolor='rgba(0,0,0,0)'),
             margin=dict(l=40, r=40, t=20, b=20),
@@ -269,7 +285,7 @@ def render(ctx):
             va, vb = agg_a[metrica], agg_b[metrica]
             mejor_a = va > vb
             filas_tabla.append({
-                'Métrica': metrica,
+                'Métrica': NOMBRES_CMP.get(metrica, metrica),
                 jugador_a[:20]: f"{va:{formato}}" if formato != 'd' else str(va),
                 jugador_b[:20]: f"{vb:{formato}}" if formato != 'd' else str(vb),
                 'Ventaja': truncar_nombre(jugador_a, 16) if mejor_a else truncar_nombre(jugador_b, 16),

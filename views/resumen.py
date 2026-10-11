@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from charts import style_fig, chart_kwargs
-from components import _html_plano, truncar_nombre, hito_badge
+from components import _html_plano, miles, truncar_nombre, hito_badge
 
 
 def render(ctx):
@@ -38,16 +38,17 @@ def render(ctx):
 
     # Fila flex propia (cards-row): iguala alturas de las 5 tarjetas y apila
     # con aire en móvil; st.columns no estira el contenido entre columnas.
+    n_suspendidos = int((df_partidos['estado'] == 'suspendido').sum())
     diff_color = "#34D399" if diff_pts >= 0 else "#F87171"
     tarjetas_kpi = [
         ("Partidos Oficiales", f"{total_games}",
-         f"{pending_current} por jugar en 2026/2027", ""),
+         f"{pending_current} por jugar · {n_suspendidos} suspendidos (COVID)", ""),
         ("Balance W / L", f"{wins} - {losses}",
          f"{win_pct:.1f}% de victorias", "color: #6EE7B7; font-weight: 700;"),
-        ("Puntos a Favor (PPP)", f"{avg_scored:.1f}",
-         f"{pts_scored:,} puntos anotados", ""),
-        ("Puntos en Contra (PPP)", f"{avg_allowed:.1f}",
-         f"{pts_allowed:,} puntos recibidos", ""),
+        ("Puntos a Favor (por partido)", f"{avg_scored:.1f}",
+         f"{miles(pts_scored)} puntos anotados en total", ""),
+        ("Puntos en Contra (por partido)", f"{avg_allowed:.1f}",
+         f"{miles(pts_allowed)} puntos recibidos en total", ""),
         ("Diferencial Neto", f"{diff_pts:+d}",
          f"{(diff_pts / total_games if total_games else 0):+.1f} pts / partido",
          f"color: {diff_color};"),
@@ -176,7 +177,7 @@ def render(ctx):
             <div class="metric-container">
                 <div class="metric-label">{titulo} · {n} partidos</div>
                 <div class="metric-value">{v} - {d} <span style="font-size: 1.1rem; color: #93C5FD;">{pct:.1f}% victorias</span></div>
-                <div class="metric-sub">PPP a favor <b>{pf:.1f}</b> · PPP en contra <b>{pc:.1f}</b></div>
+                <div class="metric-sub">A favor <b>{pf:.1f}</b> · en contra <b>{pc:.1f}</b> (por partido)</div>
                 <div class="metric-sub" style="color: {color}; font-weight: 700;">Diferencial: {dif:+.1f} pts / partido</div>
             </div>
             """
@@ -254,7 +255,7 @@ def render(ctx):
             <div class="metric-container">
                 <div class="metric-label">Historial vs {sel_rival}</div>
                 <div class="metric-value">{v_h2h} - {d_h2h} <span style="font-size: 1.1rem; color: #93C5FD;">{pct_h2h:.1f}% victorias</span></div>
-                <div class="metric-sub">PPP a favor <b>{pf_h2h:.1f}</b> · PPP en contra <b>{pc_h2h:.1f}</b></div>
+                <div class="metric-sub">A favor <b>{pf_h2h:.1f}</b> · en contra <b>{pc_h2h:.1f}</b> (por partido)</div>
                 <div class="metric-sub" style="color: {color_h2h}; font-weight: 700;">Diferencial: {dif_h2h:+.1f} pts / partido</div>
                 <div class="metric-sub">Último cruce: {ult_txt}</div>
             </div>
@@ -354,7 +355,7 @@ def render(ctx):
             <div class="metric-label">Partidos cerrados (±5)</div>
             <div class="metric-value">{v_cer} - {d_cer} <span style="font-size: 1.1rem; color: #93C5FD;">{pct_cer:.1f}% victorias</span></div>
             <div class="metric-sub">{n_cer} de {len(narr)} partidos ({n_cer / len(narr) * 100:.1f}%)</div>
-            <div class="metric-sub">PPP a favor <b>{pf_cer:.1f}</b> · PPP en contra <b>{pc_cer:.1f}</b></div>
+            <div class="metric-sub">A favor <b>{pf_cer:.1f}</b> · en contra <b>{pc_cer:.1f}</b> (por partido)</div>
             <div class="metric-sub" style="color: {color_cer}; font-weight: 700;">Diferencial: {dif_cer:+.1f} pts / partido</div>
         </div>
         <div class="metric-container">

@@ -291,3 +291,30 @@ git branch -f backup-main $COMMIT && git push backup backup-main:main
 - Clasificación completa del grupo como vista propia (ahora vive en el contexto
   de temporada y la franja del marcador).
 - Watermarking de datos si algún día se comparten ficheros fuera del club.
+- Estado en URL en vivo: los deep links se LEEN al cargar (`?vista=ficha&jugador=...`)
+  pero no se escriben al navegar — escribir query params en Streamlit 1.65
+  resetea el estado de los widgets (comprobado: la vista volvía a Resumen).
+
+### Fixes pre-publicación LinkedIn (11/10/2026, tras crítica dual-agent 24/40)
+- **Glosario de siglas** (Val, Pts/p, TS%, eFG%, NetRtg, +/-) en sidebar
+  (desktop) y bloque de nav móvil — la única barrera de jerga real.
+- **Siglas renombradas** a español legible en leyendas, tablas y tarjetas:
+  PPP→Pts/p, RPP→Reb/p, APP→As/p, VPP→Val/p, ROB→Rob/p, TAP→Tap/p, T3P→Trip/p
+  ("PPP" sugería posesiones: daño de credibilidad silencioso).
+- **Selector de partidos = tabla seleccionable** con marcador visible, Sede,
+  Res y columna «Datos» (los 199 partidos con su resultado a la vista, en vez
+  de 199 etiquetas truncadas con V/D solo por emoji). Selección por checkbox
+  (glide grid: el clic de selección va en el checkbox, no en la celda).
+- **Navegación móvil sin drawer**: en ≤720px la sidebar se oculta y la nav es
+  un radio horizontal al inicio del contenido (1 tap por vista, sincronizado
+  con la sidebar por callbacks; CSS con `:has()` encadena marcador+radio+glosario).
+- **Radar del comparador normalizado eje a eje** (cada métrica contra el máximo
+  de los dos) con valores reales en el hover — antes Reb/As/Tap colapsaban al
+  centro cuando PPP dominaba la escala común.
+- **KPIs aclarados**: «199 jugados · 26 por jugar · 9 suspendidos (COVID)»
+  cuadra con los 234; miles en formato español con helper único `miles()`.
+- **og:description** de la tarjeta de LinkedIn: primer párrafo del README
+  reescrito para cerrar limpio (~145 chars) sin truncar.
+- Footer con temporada dinámica (ya no hardcodeada); botón « fantasma y badge
+  de Cloud ocultos; anclas ocultas en desktop también; «TS% carrera» movido a
+  la tarjeta de Valoración; caption de Cuartos aclara «con parciales».
