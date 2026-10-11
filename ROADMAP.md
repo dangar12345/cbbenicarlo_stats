@@ -219,7 +219,17 @@ porque el historial no contiene datos en claro.
 
 **Flujo de trabajo (importante)**: el desarrollo sigue en `main` local
 (historial completo). El repo público recibe **historial fresco**, nunca `main`
-directo (arrastraría el historial con datos en claro). Para publicar cambios:
+directo (arrastraría el historial con datos en claro). **El `scraper.py` no se
+publica** — ni en el árbol ni en el historial del repo público (el sync lo
+excluye siempre; vive en el repo privado de backup, que lo lleva en su raíz).
+
+⚠ **Tras un sync que cambie la ESTRUCTURA de módulos** (imports, ficheros
+nuevos/renombrados): hacer **Reboot app** en Streamlit Cloud (Manage app → ⋮).
+Cloud re-ejecuta el script en el mismo proceso Python tras el pull y
+`sys.modules` retiene los módulos viejos → `ImportError: cannot import name
+'X' from 'modulo'` aunque el árbol publicado esté bien. Comprobar siempre con
+`git show origin/main:modulo.py | grep ...` y/o un clon limpio antes de culpar
+al sync (sucedido el 11/10 con `GLOSARIO`). Para publicar cambios:
 
 ```bash
 # 1. Terminar el trabajo en main y commitear
