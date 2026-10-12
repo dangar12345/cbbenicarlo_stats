@@ -50,6 +50,14 @@ $PY scripts/qa_reconcile.py --fix
 echo "== 3/5 Cifrado de parquet =="
 $PY scripts/encrypt_data.py
 
+# Los .enc son ficheros trackeados: sin este commit el sync no publicaría los
+# datos nuevos (el árbol de main seguiría con los .enc de la vez anterior).
+git add data/enc
+if ! git diff --cached --quiet; then
+    git commit -q -m "datos: .enc actualizados ($(date +%Y-%m-%d))"
+    echo "   commit de .enc creado"
+fi
+
 echo "== 4/5 Backup de datos en claro (repo privado) =="
 export GIT_INDEX_FILE="$(mktemp /tmp/opencode/idx-backup.XXXX)"
 git read-tree main
