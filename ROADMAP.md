@@ -315,9 +315,9 @@ git branch -f backup-main $COMMIT && git push backup backup-main:main
   Res y columna «Datos» (los 199 partidos con su resultado a la vista, en vez
   de 199 etiquetas truncadas con V/D solo por emoji). Selección por checkbox
   (glide grid: el clic de selección va en el checkbox, no en la celda).
-- **Navegación móvil sin drawer**: en ≤720px la sidebar se oculta y la nav es
-  un radio horizontal al inicio del contenido (1 tap por vista, sincronizado
-  con la sidebar por callbacks; CSS con `:has()` encadena marcador+radio+glosario).
+- **Navegación móvil con drawer lateral**: la barra lateral izquierda
+  se mantiene como panel desplegable nativo accesible mediante el control
+  superior (`>`), eliminando los botones de radio del contenido principal.
 - **Radar del comparador normalizado eje a eje** (cada métrica contra el máximo
   de los dos) con valores reales en el hover — antes Reb/As/Tap colapsaban al
   centro cuando PPP dominaba la escala común.

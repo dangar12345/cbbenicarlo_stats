@@ -29,26 +29,10 @@ except Exception as e:
 
 
 # --- NAVEGACIÓN ---
-# Desktop: radio en la sidebar. Móvil: bloque equivalente al inicio del
-# contenido (la sidebar desaparece por CSS en táctil). Ambos radios se
-# sincronizan por callbacks y el estado viaja en la URL (deep link):
-#   ?vista=ficha&jugador=LIBROIA,...
 _param_vista = st.query_params.get("vista")
 _vista_titulo = next((v for v, s in SLUGS.items() if s == _param_vista), None)
 if _vista_titulo and "nav_side" not in st.session_state:
     st.session_state["nav_side"] = _vista_titulo
-    st.session_state["nav_movil"] = _vista_titulo
-
-def _sync_movil():
-    st.session_state["nav_movil"] = st.session_state["nav_side"]
-
-def _sync_side():
-    st.session_state["nav_side"] = st.session_state["nav_movil"]
-
-nav_option = st.sidebar.radio(
-    "Vistas del sistema", VISTAS, key="nav_side",
-    on_change=_sync_movil, label_visibility="collapsed"
-)
 
 st.sidebar.markdown("""
 <div style="padding: 12px 0 20px 0;">
@@ -61,6 +45,11 @@ st.sidebar.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+nav_option = st.sidebar.radio(
+    "Vistas del sistema", VISTAS, key="nav_side",
+    label_visibility="collapsed"
+)
+
 st.sidebar.markdown("---")
 st.sidebar.markdown(f"""
 <div style="font-size: 0.82rem; color: #CBD5E1; line-height: 1.6;">
@@ -70,23 +59,6 @@ st.sidebar.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 with st.sidebar.expander("📖 Glosario de siglas"):
-    st.markdown(GLOSARIO)
-
-# Bloque de navegación móvil (oculto en desktop por CSS; cadena .solo-movil)
-st.markdown(f"""
-<div class="solo-movil">
-    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 0 2px 10px 2px;">
-        <span style="font-size: 1.05rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.01em;">🏀 CB BENICARLÓ</span>
-        <span style="font-size: 0.72rem; font-weight: 700; color: #60A5FA; letter-spacing: 0.05em;">ANALYTICS HUB</span>
-    </div>
-    <div style="font-size: 0.78rem; color: #CBD5E1; margin-bottom: 4px;">
-        📊 {miles(len(df_partidos))} partidos · 🏀 {miles(len(df_jugadores))} registros · ⏱️ {df_partidos['temporada'].nunique()} temporadas
-    </div>
-</div>
-""", unsafe_allow_html=True)
-st.radio("Vistas del sistema", VISTAS, key="nav_movil",
-         on_change=_sync_side, horizontal=True, label_visibility="collapsed")
-with st.expander("📖 Glosario de siglas"):
     st.markdown(GLOSARIO)
 
 ctx = {

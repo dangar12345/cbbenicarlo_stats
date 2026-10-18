@@ -541,21 +541,17 @@ CSS = """<style>
         display: none !important;
     }
 
-    /* Navegación móvil: la app vive en un iframe; el bloque de nav móvil
-       (marcador .solo-movil + radio + glosario) se oculta en desktop y se
-       muestra en táctil, donde la sidebar desaparece por completo. La cadena
-       de hermanos usa :has() porque los widgets van dentro de contenedores. */
-    .solo-movil { display: none; }
-    .stVerticalBlock > div:has(.solo-movil),
-    .stVerticalBlock > div:has(.solo-movil) + div,
-    .stVerticalBlock > div:has(.solo-movil) + div + div { display: none; }
-    @media (max-width: 720px) {
-        .solo-movil { display: block; }
-        .stVerticalBlock > div:has(.solo-movil),
-        .stVerticalBlock > div:has(.solo-movil) + div,
-        .stVerticalBlock > div:has(.solo-movil) + div + div { display: block; }
-        section[data-testid="stSidebar"],
-        [data-testid="stSidebarCollapsedControl"] { display: none !important; }
+    /* Botón de apertura de barra lateral en móvil/pantallas estrechas */
+    div[data-testid="stSidebarCollapsedControl"] button {
+        color: #93C5FD !important;
+        background: rgba(15, 23, 42, 0.85) !important;
+        border: 1px solid #233554 !important;
+        border-radius: 8px !important;
+    }
+    div[data-testid="stSidebarCollapsedControl"] button:hover {
+        background: #1E293B !important;
+        border-color: #3B82F6 !important;
+        color: #FFFFFF !important;
     }
 
     /* Móvil: modebar de Plotly oculta (táctil, sin hover) y marcador compacto */
