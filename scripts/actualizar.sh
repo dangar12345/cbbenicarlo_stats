@@ -59,10 +59,11 @@ if ! git diff --cached --quiet; then
 fi
 
 echo "== 4/5 Backup de datos en claro (repo privado) =="
-export GIT_INDEX_FILE="$(mktemp /tmp/opencode/idx-backup.XXXX)"
+export GIT_INDEX_FILE="$(mktemp -t idx-backup.XXXX)"
 git read-tree main
 git add -f data/ .streamlit/secrets.toml
 TREE=$(git write-tree)
+rm -f "$GIT_INDEX_FILE"
 unset GIT_INDEX_FILE
 PARENT=$(git rev-parse -q --verify backup-main >/dev/null && git rev-parse backup-main || git rev-parse main)
 if [ "$TREE" = "$(git rev-parse "$PARENT^{tree}")" ]; then
@@ -72,6 +73,7 @@ else
     git branch -f backup-main "$COMMIT"
     git push backup backup-main:main
 fi
+git push backup main:historial
 
 echo "== 5/5 Sync del repo público =="
 git checkout -q publico
