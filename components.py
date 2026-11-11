@@ -45,3 +45,36 @@ GLOSARIO = (
     "**+/-** — puntos netos del equipo mientras el jugador está en pista.\n\n"
     "**Cerrados (±5)** — partidos decididos por 5 puntos o menos."
 )
+
+GLOSARIO_HTML = _html_plano("""
+<div class="glosario-list">
+    <div class="glosario-item">
+        <span class="glosario-term">Val</span>
+        <span class="glosario-desc">Valoración estadística oficial publicada en el acta FEB.</span>
+    </div>
+    <div class="glosario-item">
+        <span class="glosario-term">Pts/p, Reb/p, As/p…</span>
+        <span class="glosario-desc">Medias calculadas por partido (Pts, Reb, As, Rob, Tap, Val).</span>
+    </div>
+    <div class="glosario-item">
+        <span class="glosario-term">TS%</span>
+        <span class="glosario-desc">Porcentaje de tiro real: PTS / (2 × (TCI + 0.44 × TLI)).</span>
+    </div>
+    <div class="glosario-item">
+        <span class="glosario-term">eFG%</span>
+        <span class="glosario-desc">Porcentaje de tiro efectivo: (TCA + 0.5 × T3A) / TCI.</span>
+    </div>
+    <div class="glosario-item">
+        <span class="glosario-term">NetRtg</span>
+        <span class="glosario-desc">Diferencial neto por 100 posesiones (estimado por minuto).</span>
+    </div>
+    <div class="glosario-item">
+        <span class="glosario-term">+/-</span>
+        <span class="glosario-desc">Puntos netos del equipo mientras el jugador está en pista.</span>
+    </div>
+    <div class="glosario-item">
+        <span class="glosario-term">Cerrados (±5)</span>
+        <span class="glosario-desc">Partidos resueltos por 5 puntos o menos de margen.</span>
+    </div>
+</div>
+""")

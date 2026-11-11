@@ -88,8 +88,12 @@ def render(ctx):
     relevancia = beni_jug.groupby('jugador')['puntos'].sum().sort_values(ascending=False)
     lista_jugadores = relevancia.index.tolist()
 
-    modo_jug = st.radio("Modo", ["Ficha individual", "Comparador"],
-                        horizontal=True, label_visibility="collapsed")
+    modo_jug = st.segmented_control(
+        "Modo",
+        ["Ficha individual", "Comparador"],
+        default="Ficha individual",
+        label_visibility="collapsed"
+    ) or "Ficha individual"
 
     # ------------------------------------------------------------------ FICHA
     if modo_jug == "Ficha individual":

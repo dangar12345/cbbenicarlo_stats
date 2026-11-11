@@ -70,6 +70,10 @@ CSS = """<style>
         padding: 18px 20px;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
         height: 100%;
+        transition: border-color 0.15s ease;
+    }
+    .metric-container:hover {
+        border-color: #3B82F6;
     }
     /* Para que height:100% funcione, toda la cadena de ancestros dentro de la
        fila de columnas debe tener altura definida (el DOM de Streamlit monta
@@ -245,13 +249,241 @@ CSS = """<style>
     }
     section[data-testid="stSidebar"] hr {
         margin: 0.5rem 0 1rem 0;
+        border-color: #1E293B;
+    }
+
+    /* Sidebar Brand Box */
+    .sidebar-brand-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 4px 16px 4px;
+        border-bottom: 1px solid #1E293B;
+        margin-bottom: 14px;
+    }
+    .sidebar-brand-icon {
+        font-size: 1.6rem;
+        line-height: 1;
+    }
+    .sidebar-brand-title {
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: #FFFFFF;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+    }
+    .sidebar-brand-sub {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #60A5FA;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-top: 2px;
+    }
+
+    /* Modern Sidebar Navigation Links */
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] > div {
+        gap: 4px !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label {
+        background-color: transparent !important;
+        border: 1px solid transparent !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        margin: 0 !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label:hover {
+        background-color: #111C30 !important;
+        border-color: #1E293B !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label:hover p {
+        color: #FFFFFF !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label[data-checked="true"],
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label:has(input:checked) {
+        background-color: rgba(37, 99, 235, 0.18) !important;
+        border-color: rgba(59, 130, 246, 0.45) !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label[data-checked="true"] p,
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label:has(input:checked) p {
+        color: #93C5FD !important;
+        font-weight: 800 !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] input[type="radio"] {
+        accent-color: #3B82F6 !important;
+    }
+
+    /* Sidebar metadata telemetry card */
+    .sidebar-meta-card {
+        background: #0E1628;
+        border: 1px solid #1E293B;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-top: 14px;
+        margin-bottom: 8px;
+    }
+    .sidebar-meta-header {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.68rem;
+        font-weight: 800;
+        color: #64748B;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #162032;
+    }
+    .sidebar-meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 0;
+        font-size: 0.78rem;
+        border-bottom: 1px solid #131D31;
+    }
+    .sidebar-meta-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .sidebar-meta-label {
+        color: #94A3B8;
+        font-size: 0.76rem;
+    }
+    .sidebar-meta-val {
+        font-weight: 800;
+        color: #F8FAFC;
+        font-feature-settings: "tnum" 1;
+        font-size: 0.82rem;
+    }
+
+    /* Sidebar Expander & Typography Scoping */
+    section[data-testid="stSidebar"] div[data-testid="stExpander"] {
+        background-color: #0E1628 !important;
+        border: 1px solid #1E293B !important;
+        border-radius: 8px !important;
+        margin-top: 8px !important;
+        box-shadow: none !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stExpander"] details {
+        border: none !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stExpander"] summary {
+        background-color: #0E1628 !important;
+        padding: 8px 12px !important;
+        font-size: 0.80rem !important;
+        font-weight: 700 !important;
+        color: #93C5FD !important;
+        letter-spacing: 0.02em !important;
+        border-radius: 8px !important;
+        transition: all 0.15s ease !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stExpander"] summary:hover {
+        background-color: #162238 !important;
+        color: #FFFFFF !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stExpander"] summary svg {
+        fill: #60A5FA !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stExpander"] [data-testid="stExpanderDetails"] {
+        background-color: #0A101F !important;
+        padding: 10px 12px !important;
+        border-top: 1px solid #1E293B !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stExpander"] [data-testid="stExpanderDetails"] p,
+    section[data-testid="stSidebar"] div[data-testid="stExpander"] [data-testid="stMarkdownContainer"] p {
+        font-size: 0.78rem !important;
+        line-height: 1.45 !important;
+        color: #CBD5E1 !important;
+        margin-bottom: 8px !important;
+    }
+    section[data-testid="stSidebar"] div[data-testid="stExpander"] [data-testid="stExpanderDetails"] strong {
+        color: #60A5FA !important;
+        font-weight: 700 !important;
+    }
+
+    /* Glosario list styling */
+    .glosario-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .glosario-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #162032;
+        line-height: 1.35;
+    }
+    .glosario-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .glosario-term {
+        display: inline-block;
+        align-self: flex-start;
+        font-weight: 800;
+        color: #60A5FA;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.72rem;
+        background: rgba(37, 99, 235, 0.12);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        border-radius: 4px;
+        padding: 1px 5px;
+        margin-bottom: 2px;
+    }
+    .glosario-desc {
+        color: #94A3B8;
+        font-size: 0.76rem;
+        line-height: 1.35;
+    }
+
+    /* General Expander styling */
+    div[data-testid="stExpander"] {
+        background-color: #0F172A !important;
+        border: 1px solid #1E293B !important;
+        border-radius: 8px !important;
+    }
+    div[data-testid="stExpander"] summary {
+        color: #F8FAFC !important;
+        font-weight: 700 !important;
+    }
+    div[data-testid="stExpander"] summary:hover {
+        color: #60A5FA !important;
+    }
+
+    /* Footer */
+    .app-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 0.78rem;
+        color: #64748B;
+        border-top: 1px solid #1E293B;
+        padding: 20px 0 10px 0;
+    }
+    .app-footer b {
+        color: #94A3B8;
+    }
+    .app-footer .footer-sep {
+        color: #334155;
     }
 
     /* Selectbox, Inputs, Radio */
-    .stSelectbox label, .stTextInput label, .stRadio label {
-        color: #F8FAFC !important;
+    .stSelectbox label, .stTextInput label, .stRadio label, .stSlider label {
+        color: #CBD5E1 !important;
         font-weight: 700 !important;
-        font-size: 0.9rem !important;
+        font-size: 0.88rem !important;
+        letter-spacing: 0.01em !important;
     }
 
     /* Form controls: consistent dark surface + visible hover/focus */

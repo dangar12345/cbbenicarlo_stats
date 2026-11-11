@@ -1,6 +1,6 @@
 import streamlit as st
 
-from components import GLOSARIO, miles
+from components import GLOSARIO_HTML, miles
 from data_loaders import load_data
 from theme import CSS
 from views import cuartos, ficha, lideres, partidos, resumen
@@ -35,12 +35,11 @@ if _vista_titulo and "nav_side" not in st.session_state:
     st.session_state["nav_side"] = _vista_titulo
 
 st.sidebar.markdown("""
-<div style="padding: 12px 0 20px 0;">
-    <div style="font-size: 1.45rem; font-weight: 900; color: #FFFFFF; letter-spacing: -0.02em;">
-        CB BENICARLÓ
-    </div>
-    <div style="font-size: 0.8rem; font-weight: 700; color: #60A5FA; letter-spacing: 0.05em; text-transform: uppercase;">
-        Analytics Hub · FEB (2019 - 2027)
+<div class="sidebar-brand-box">
+    <div class="sidebar-brand-icon">🏀</div>
+    <div>
+        <div class="sidebar-brand-title">CB BENICARLÓ</div>
+        <div class="sidebar-brand-sub">Analytics Hub · FEB</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -50,16 +49,28 @@ nav_option = st.sidebar.radio(
     label_visibility="collapsed"
 )
 
-st.sidebar.markdown("---")
 st.sidebar.markdown(f"""
-<div style="font-size: 0.82rem; color: #CBD5E1; line-height: 1.6;">
-    📊 <b>{miles(len(df_partidos))}</b> Partidos en la base de datos<br>
-    🏀 <b>{miles(len(df_jugadores))}</b> Registros de jugadores<br>
-    ⏱️ <b>{df_partidos['temporada'].nunique()}</b> Temporadas cubiertas
+<div class="sidebar-meta-card">
+    <div class="sidebar-meta-header">
+        <span>📊</span> Cobertura de Datos
+    </div>
+    <div class="sidebar-meta-row">
+        <span class="sidebar-meta-label">Partidos en BD</span>
+        <span class="sidebar-meta-val">{miles(len(df_partidos))}</span>
+    </div>
+    <div class="sidebar-meta-row">
+        <span class="sidebar-meta-label">Registros jugadores</span>
+        <span class="sidebar-meta-val">{miles(len(df_jugadores))}</span>
+    </div>
+    <div class="sidebar-meta-row">
+        <span class="sidebar-meta-label">Temporadas</span>
+        <span class="sidebar-meta-val">{df_partidos['temporada'].nunique()}</span>
+    </div>
 </div>
 """, unsafe_allow_html=True)
+
 with st.sidebar.expander("📖 Glosario de siglas"):
-    st.markdown(GLOSARIO)
+    st.markdown(GLOSARIO_HTML, unsafe_allow_html=True)
 
 ctx = {
     'df_partidos': df_partidos,
@@ -83,9 +94,13 @@ elif nav_option == "Cuartos":
 
 
 # Footer
-st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height: 48px;'></div>", unsafe_allow_html=True)
 st.markdown(f"""
-<div style="text-align: center; font-size: 0.8rem; color: #94A3B8; border-top: 1px solid #1E293B; padding-top: 16px;">
-    CB Benicarló Analytics Hub · Datos Oficiales FEB · Temporada {df_partidos['temporada'].max()}
+<div class="app-footer">
+    <span>🏀 <b>CB Benicarló Analytics Hub</b></span>
+    <span class="footer-sep">·</span>
+    <span>Datos Oficiales FEB</span>
+    <span class="footer-sep">·</span>
+    <span>Temporada {df_partidos['temporada'].max()}</span>
 </div>
 """, unsafe_allow_html=True)
